@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, ref } from 'vue'
-import type { FormInstance, FormRules } from 'element-plus'
-import { getCheckCode } from '@/api/login'
+import { getCurrentInstance, nextTick, onMounted, reactive, ref, type ComponentInternalInstance } from 'vue'
+import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { md5 } from 'js-md5'
+import { getCheckCode, toLogin } from '@/api/login'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const instance = getCurrentInstance() as ComponentInternalInstance
 
 // 验证码
 let checkCode = ref('')
@@ -10,11 +15,22 @@ const setCheckCode = async() => {
     const res = await getCheckCode()
     console.log(res.data.content)
     checkCode.value = res.data.content
-  } catch (error) {}
+  } catch (error) {
+    ElMessage({
+      message: `验证码获取失败`,
+      type: 'error'
+    })
+  }
 }
 
 const init = () => {
-  setCheckCode()
+  setCheckCode();
+  (<FormInstance>ruleFormRef.value).resetFields()
+  // 从 VueCookies 里拿数据
+  const { phone, passWord, remember } = instance.appContext.config.globalProperties.VueCookies.get('loginInfo') || {}
+  ruleForm.phone = phone
+  ruleForm.passWord = passWord
+  ruleForm.remember = remember
 }
 
 onMounted(() => {
@@ -23,6 +39,7 @@ onMounted(() => {
   })
 })
 
+// 表单验证
 const ruleFormRef = ref<FormInstance>()
 
 const validatePhone = (rule: any, value: any, callback: any) => {
@@ -36,6 +53,7 @@ const validatePhone = (rule: any, value: any, callback: any) => {
     callback()
   }
 }
+
 const validatePassWord = (rule: any, value: any, callback: any) => {
   if (!value) {
     return callback(new Error('请输入密码'))
@@ -71,13 +89,44 @@ const rules = reactive<FormRules<typeof ruleForm>>({
   checkCode: [{ validator: validateCheckCode, trigger: 'blur' }],
 })
 
+// 登录逻辑
 const submitForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  formEl.validate((valid) => {
+  formEl.validate(async(valid) => {
     if (valid) {
-      console.log('submit!')
+      let params = {
+        phone: ruleForm.phone,
+        passWord: md5(ruleForm.passWord), // 使用 md5 加工密码
+        checkCode: ruleForm.checkCode
+      }
+      const res = await toLogin()
+      if (!res) {
+        return
+      }
+      if (ruleForm.remember) {
+        const loginInfo = {
+          phone: ruleForm.phone,
+          passWord: ruleForm.passWord,
+          remember: ruleForm.remember
+        }
+        // 把登录的信息存入 VueCookies
+        instance.appContext.config.globalProperties.VueCookies.set('loginInfo', loginInfo, '7d')
+      } else {
+        instance.appContext.config.globalProperties.VueCookies.remove('loginInfo')
+      }
+      ElMessage({
+        message: `登录成功`,
+        type: 'success'
+      })
+      router.replace({
+        path: '/home'
+      })
     } else {
-      console.log('error submit!')
+      ElMessage({
+        message: `登录失败`,
+        type: 'error'
+      })
+      setCheckCode()
     }
   })
 }
@@ -109,6 +158,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
           <el-input
             v-model="ruleForm.passWord"
             type="password"
+            show-password
             autocomplete="off"
             placeholder="请输入密码"
           >
