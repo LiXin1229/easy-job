@@ -1,23 +1,26 @@
-import axios, { type AxiosRequestConfig, type AxiosResponse } from 'axios'
+import axios, { type AxiosRequestConfig } from 'axios'
 import { ElLoading, ElMessage } from 'element-plus'
+import type { LoadingInstance } from 'element-plus/es/components/loading/src/loading.mjs'
 
-// 定义请求配置类型
-// type RequestConfig = {
-//   url: string
-//   params?: any
-//   dataType?: 'form' | 'json' | 'file'
-//   showLoading?: boolean
-//   method?: 'post' | 'get' | 'put' | 'delete' // 支持更多请求方法
-// }
-
-interface CustomRequestConfig<T = AxiosResponse> extends AxiosRequestConfig {
+interface CustomRequestConfig extends AxiosRequestConfig {
   dataType?: 'form' | 'json' | 'file'
   showLoading?: boolean
+}
+
+// 自定义参数, 控制是否出现消息提示
+interface CustomConfigType {
+  showLoading: boolean,
+  loading: LoadingInstance | null
 }
 
 const contentTypeForm = 'application/x-www-form-urlencoded;charset=UTF-8'
 const contentTypeJson = 'application/json'
 const contentTypeFile ='multipart/form-data'
+
+const customConfig: CustomConfigType = {
+  showLoading: false,
+  loading: null
+}
 
 // 创建axios实例
 const instance: any = axios.create({
@@ -29,23 +32,21 @@ const instance: any = axios.create({
 
 // 请求拦截器
 instance.interceptors.request.use(
-  (config: CustomRequestConfig) => {
-    console.log(config.showLoading)
-    console.log(config.dataType)
-    console.log(config.method)
-    if (config.showLoading) { // 如果 showLoading 为 true 展示加载动画
+  (config: AxiosRequestConfig) => {
+    console.log(customConfig.showLoading)
+    if (customConfig.showLoading) { // 如果 showLoading 为 true 展示加载动画
       const loading = ElLoading.service({ // loading 动画
         lock: true,
         text: '加载中......',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-      (config as any).loading = loading // loading 实例挂载到 config 上, 方便关闭
+      customConfig.loading = loading
     }
-    return config;
+    return config
   },
   (error: any) => {
-    if ((error.config as any).loading) {
-      (error.config as any).loading.close() // 如果有 loading, 则关闭
+    if (customConfig.loading) {
+      customConfig.loading.close() // 如果有 loading, 则关闭
     }
     ElMessage({ // 弹框提示错误
       message: '请求发送失败',
@@ -58,14 +59,14 @@ instance.interceptors.request.use(
 // 响应拦截器
 instance.interceptors.response.use(
   (response: any) => {
-    if ((response.config as any).loading) {
-      (response.config as any).loading.close() // 如果有 loading, 则关闭
+    if (customConfig.loading) {
+      customConfig.loading.close() // 如果有 loading, 则关闭
     }
-    return response.data;
+    return response.data
   },
   (error: any) => {
-    if ((error.config as any).loading) {
-      (error.config as any).loading.close()
+    if (customConfig.loading) {
+      customConfig.loading.close()
     }
     // 错误处理
     if (error.response) {
@@ -92,9 +93,8 @@ instance.interceptors.response.use(
 );
 
 // 请求函数
-const request = ({ url, params = {}, dataType = 'form', showLoading = false, method = 'post' }: CustomRequestConfig ) => {
-  console.log(showLoading)
-  console.log(method)
+const request = ({ url, params = {}, dataType = 'form', showLoading = false, method = 'post' }: CustomRequestConfig) => {
+  customConfig.showLoading = showLoading
   // 确定 Content-Type 并处理参数
   let contentType = contentTypeForm
   if (dataType === 'json') {
@@ -106,8 +106,10 @@ const request = ({ url, params = {}, dataType = 'form', showLoading = false, met
       formData.append(key, params[key])
     }
     // 把 params 转换为 FormData 对象
-    params = formData;
+    params = formData
   }
+  // console.log(contentType)
+  // console.log(params)
 
   // instance.defaults.headers['Content-Type'] = contentType
   instance.defaults.headers = {

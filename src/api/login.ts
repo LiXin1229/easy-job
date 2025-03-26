@@ -1,12 +1,12 @@
-// import request from '@/utils/requestv2'
+import requestv2 from '@/utils/requestv2'
 import request, { type HRequestInterceptors } from '@/utils/hRequest'
 
-// export const getCheckCode = () => {
-//   return request({
-//     url: 'https://api.xygeng.cn/one',
-//     showLoading: true
-//   })
-// }
+export const getCheckCodev2 = () => {
+  return requestv2({
+    url: 'https://api.xygeng.cn/one',
+    showLoading: true
+  })
+}
 
 export const getCheckCode = () => {
   return request.post({
