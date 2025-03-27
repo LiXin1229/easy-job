@@ -4,6 +4,7 @@ import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
 import { md5 } from 'js-md5'
 import { getCheckCode, toLogin } from '@/api/login'
 import { useRouter } from 'vue-router'
+import { validateCheckCode, validatePassWord, validatePhone } from '@/utils/validate'
 
 const router = useRouter()
 const instance = getCurrentInstance() as ComponentInternalInstance
@@ -41,40 +42,6 @@ onMounted(() => {
 
 // 表单验证
 const ruleFormRef = ref<FormInstance>()
-
-const validatePhone = (rule: any, value: any, callback: any) => {
-  if (value === '') {
-    callback(new Error('请输入手机号'))
-  } else {
-    const phoneRegex = /^1[3-9]\d{9}$/
-    if (!phoneRegex.test(value)) {
-      callback(new Error('请输入正确手机号'))
-    }
-    callback()
-  }
-}
-
-const validatePassWord = (rule: any, value: any, callback: any) => {
-  if (!value) {
-    return callback(new Error('请输入密码'))
-  }
-  if (value.length < 6) {
-    return callback(new Error('密码长度不能少于 6 位'));
-  }
-  callback()
-}
-
-const validateCheckCode = (rule: any, value: any, callback: any) => {
-  if (!value) {
-    return callback(new Error('请输入验证码'))
-  } else {
-    const codeRegex = /^[a-zA-Z0-9]{4}$/
-    if (!codeRegex.test(value)) {
-      callback(new Error('请输入正确验证码'))
-    }
-    callback()
-  }
-}
 
 const ruleForm = reactive({
   phone: '',
@@ -114,6 +81,23 @@ const submitForm = (formEl: FormInstance | undefined) => {
       } else {
         instance.appContext.config.globalProperties.VueCookies.remove('loginInfo')
       }
+      const userInfo = {
+        userName: "李信",
+        menuList: [
+          { menuName: '首页', menuUrl: '/', icon: 'home', children: [
+            { menuName: '首页', menuUrl: '/home' }
+          ] },
+          { menuName: '内容管理', menuUrl: '/content', icon: 'content', children: [
+            { menuName: '分类管理', menuUrl: '/content/category' },
+            { menuName: '八股文管理', menuUrl: '/content/bagu' },
+            { menuName: '题库管理', menuUrl: '/content/tiku' },
+            { menuName: '经验分享', menuUrl: '/content/jinyan' }
+          ] },
+          { menuName: 'app', menuUrl: '/app', icon: 'app', children: [] },
+          { menuName: '设置', menuUrl: '/setting', icon: 'settings', children: [] },
+        ]
+      }
+      sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
       ElMessage({
         message: `登录成功`,
         type: 'success'
