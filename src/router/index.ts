@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '@/views/Login.vue'
 import Layout from '@/views/Layout.vue'
-import Home from '@/views/Home.vue'
+import Home from '@/views/home/Home.vue'
 import CategoryList from '@/views/content/CategoryList.vue'
 
 const router = createRouter({

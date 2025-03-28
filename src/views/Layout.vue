@@ -88,6 +88,9 @@ const addTabHandle = (currentMenu: any) => {
 const tabClick = (e: any) => {
   // console.log(e.props.name)
   menuSelect(e.props.name, true)
+  router.push({
+    path: e.props.name
+  })
 }
 
 // 删除某个 tab
@@ -178,16 +181,14 @@ const closeDialog = () => {
       <div class="main-content">
         <div class="tag-content">
           <!-- tab 结构 -->
-          <el-tabs type="border-card" v-model="currentSubMenu.menuUrl" @tab-click="tabClick" @edit="editTab">
+          <el-tabs type="card" class="demo-tabs" v-model="currentSubMenu.menuUrl" @tab-click="tabClick" @edit="editTab">
             <el-tab-pane
               v-for="i in tabList"
               :key="i.menuUrl"
               :label="i.menuName"
               :name="i.menuUrl"
               :closable="tabList.length > 1"
-            >
-              {{ i.menuUrl }}
-            </el-tab-pane>
+            ></el-tab-pane>
           </el-tabs>
         </div>
         <div class="body-content">
@@ -221,9 +222,9 @@ const closeDialog = () => {
       line-height: 60px;
 
       .user-name {
-      color: #409EFF;
-      font-style: italic;
-    }
+        color: #409EFF;
+        font-style: italic;
+      }
     }
   }
 
@@ -282,6 +283,34 @@ const closeDialog = () => {
           background-color: rgb(231, 244, 255);
           color: rgb(51.2, 126.4, 204);
         }
+      }
+    }
+
+    .main-content {
+      padding: 5px;
+      width: 100%;
+
+      :deep(.tag-content) {
+        .el-tabs--card>.el-tabs__header {
+          border-bottom: none;
+          margin-bottom: 0;
+        }
+
+        .el-tabs__nav {
+          background-color: rgb(245, 247, 251);
+        }
+
+        // 让所有没有 is-active 类名的 el-tabs__item 有下边框
+        .el-tabs__item:not(.is-active) {
+          border-bottom: 1px solid var(--el-border-color-light);
+        }
+      }
+
+      .body-content {
+        padding: 10px;
+        width: 100%;
+        height: calc(100vh - 60px - 55px);
+        background-color: rgb(245, 247, 251);
       }
     }
   }
