@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { getAllData, getAppWeekData, getContentWeekData } from '@/api/home'
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import * as echarts from 'echarts'
+import type { ECharts, EChartsOption } from 'echarts'
+import westeros from '@/lib/theme/westeros.json'
+
+echarts.registerTheme('westeros', westeros)
 
 // 上部分数据
 const allDataList = ref<any>([])
@@ -49,36 +53,35 @@ const loadAllData = async () => {
 }
 
 // 图表
-const theme = 'chalk'
-
-const download = ref<HTMLDivElement>()
-const DownlodaChart = ref<any>()
+const download = ref<HTMLDivElement>();
+let DownlodaChart: ECharts
 const initDownlodaChart = () => {
-  DownlodaChart.value = echarts.init(download.value, theme)
-  const initOption = {
+  DownlodaChart = echarts.init(download.value, westeros)
+  const initOption: EChartsOption = {
     title: {
       text: 'APP下载注册统计'
     },
     tooltip: {}
   }
-  DownlodaChart.value.setOption(initOption)
+  DownlodaChart.setOption(initOption)
 }
 
 const content = ref<HTMLDivElement>()
-const ContentChart = ref<any>()
+let ContentChart: ECharts
 const initContentChart = () => {
-  ContentChart.value = echarts.init(content.value, theme)
+  ContentChart = echarts.init(content.value, westeros)
   const initOption = {
     title: {
-      text: 'APP'
+      text: '内容统计'
     },
     tooltip: {}
   }
-  ContentChart.value.setOption(initOption)
+  ContentChart.setOption(initOption)
 }
 
 // 图表数据
 const downloadData = ref<any>()
+const downloadUpdateOption = reactive<EChartsOption>({})
 const getDownloadData = async() => {
   // const res = await getAppWeekData()
   downloadData.value = {
@@ -126,37 +129,37 @@ const getDownloadData = async() => {
     ] 
   }
   if (true) {
+    const xData = downloadData.value.dateList
+    const legendList: any = []
+    const seriesData: any = []
+    downloadData.value.itemDataList.forEach((ele: any) => {
+      seriesData.push({
+        name: ele.statisticsName,
+        data: ele.listData,
+        type: 'bar'
+      })
+      legendList.push(ele.statisticsName)
+    })
+    Object.assign(downloadUpdateOption, {
+      legend: {
+        data: legendList
+      },
+      xAxis: {
+        data: xData,
+        axisLabel: {
+          rotate: 45 
+        }
+      },
+      yAxis: {},
+      series: seriesData
+    })
     updateDownlodaChart()
   }
 }
 
 const updateDownlodaChart = () => {
   // console.log(downloadData.value)
-  const xData = downloadData.value.dateList
-  const legendList: any = []
-  const seriesData: any = []
-  downloadData.value.itemDataList.forEach((ele: any) => {
-    seriesData.push({
-      name: ele.statisticsName,
-      data: ele.listData,
-      type: 'bar'
-    })
-    legendList.push(ele.statisticsName)
-  })
-  const updateOption = {
-    legend: {
-      data: legendList
-    },
-    xAxis: {
-      data: xData,
-      axisLabel: {
-        rotate: 45 
-      }
-    },
-    yAxis: {},
-    series: seriesData
-  }
-  DownlodaChart.value.setOption(updateOption)
+  DownlodaChart.setOption(downloadUpdateOption)
 }
 
 const contentData = ref<any>()
@@ -254,7 +257,7 @@ const updateContentData = () => {
     })
     legendList.push(ele.statisticsName)
   })
-  const updateOption = {
+  const updateOption: EChartsOption = {
     legend: {
       data: legendList
     },
@@ -267,7 +270,12 @@ const updateContentData = () => {
     yAxis: {},
     series: seriesData
   }
-  ContentChart.value.setOption(updateOption)
+  ContentChart.setOption(updateOption)
+}
+
+const screenAdapter = () => {
+  DownlodaChart.resize()
+  ContentChart.resize()
 }
 
 onMounted(() => {
@@ -277,6 +285,8 @@ onMounted(() => {
 
   getDownloadData()
   getContentData()
+
+  window.addEventListener('resize', screenAdapter)
 })
 </script>
 
