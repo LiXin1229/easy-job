@@ -3,6 +3,7 @@ import Login from '@/views/Login.vue'
 import Layout from '@/views/Layout.vue'
 import Home from '@/views/home/Home.vue'
 import CategoryList from '@/views/content/CategoryList.vue'
+import Menu from '@/views/settings/Menu.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,10 @@ const router = createRouter({
         {
           path: '/content/category',
           component: CategoryList
+        },
+        {
+          path: '/settings/menu',
+          component: Menu
         }
       ]
     }

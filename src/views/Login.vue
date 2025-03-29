@@ -94,7 +94,11 @@ const submitForm = (formEl: FormInstance | undefined) => {
             { menuName: '经验分享', menuUrl: '/content/jinyan' }
           ] },
           { menuName: 'app', menuUrl: '/app', icon: 'app', children: [] },
-          { menuName: '设置', menuUrl: '/setting', icon: 'settings', children: [] },
+          { menuName: '设置', menuUrl: '/setting', icon: 'settings', children: [
+            { menuName: '菜单管理', menuUrl: '/settings/menu' },
+            { menuName: '角色管理', menuUrl: '/settings/juese' },
+            { menuName: '系统用户', menuUrl: '/settings/xitongyonghu' }
+          ] },
         ]
       }
       sessionStorage.setItem('userInfo', JSON.stringify(userInfo))

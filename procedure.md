@@ -26,7 +26,9 @@ npm install axios echarts element-plus js-md5 sass sass-loader suneditor vue-coo
 
 ## 登录页面
 
-![](D:\EdgeDownload\jyshare-markmap.png)
+![](D:\Projects\EasyJob\easy-job-front-admin\font-admin-resourse\登录页面.png)
+
+
 
 #### 引入 ElementPlus
 
@@ -42,6 +44,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 ```
 
+
+
 #### 引入 ElConfigProvider
 
 ```
@@ -50,6 +54,8 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   <router-view />
 </el-config-provider>
 ```
+
+
 
 #### 配置代理服务器
 
@@ -67,6 +73,8 @@ server: {
   }
 ```
 
+
+
 #### 自定义表单校验规则
 
 ```
@@ -76,6 +84,8 @@ const rules = reactive<FormRules<typeof ruleForm>>({
   checkCode: [{ validator: validateCheckCode, trigger: 'blur' }],
 })
 ```
+
+
 
 #### 封装 axios 拦截器
 
@@ -220,7 +230,7 @@ export default hRequest
 
 ```
 
-![](D:\其他\截屏\屏幕截图 2025-03-25 203728.png)
+
 
 #### VueCookie 的使用
 
@@ -236,6 +246,8 @@ instance.appContext.config.globalProperties.VueCookies.set('loginInfo', loginInf
 // 页面初始化时, 从 VueCookies 里拿数据
 const { phone, passWord, remember } = instance.appContext.config.globalProperties.VueCookies.get('loginInfo') || {}
 ```
+
+
 
 #### 路由守卫
 
@@ -253,7 +265,9 @@ router.beforeEach((to, from, next) => {
 
 ## 首页框架
 
-![](D:\EdgeDownload\jyshare-markmap (2).png)
+![](D:\Projects\EasyJob\easy-job-front-admin\font-admin-resourse\首页框架.png)
+
+
 
 #### 首次登录或刷新页面时通过 route.path 激活菜单
 
@@ -293,21 +307,23 @@ const menuSelect = (currentPath: any, addTab: boolean) => {
   Object.assign(currentSubMenu, currentMenu)
 }
 ```
+
+
 #### tab 操作
 
 ```
-		 <!-- tab 结构 -->
-          <el-tabs type="border-card" v-model="currentSubMenu.menuUrl" @tab-click="tabClick" 			@edit="editTab">
-            <el-tab-pane
-              v-for="i in tabList"
-              :key="i.menuUrl"
-              :label="i.menuName"
-              :name="i.menuUrl"
-              :closable="tabList.length > 1"
-            >
-              {{ i.menuUrl }}
-            </el-tab-pane>
-          </el-tabs>
+ <!-- tab 结构 -->
+  <el-tabs type="border-card" v-model="currentSubMenu.menuUrl" @tab-click="tabClick" 			@edit="editTab">
+    <el-tab-pane
+      v-for="i in tabList"
+      :key="i.menuUrl"
+      :label="i.menuName"
+      :name="i.menuUrl"
+      :closable="tabList.length > 1"
+    >
+      {{ i.menuUrl }}
+    </el-tab-pane>
+  </el-tabs>
           
 // tab 操作
 const tabList = reactive<any>([])
@@ -344,4 +360,197 @@ const editTab = (subName: any, actions: any) => {
     tabList.push(...newTabList)
   }
 ```
+
+
+
+## 首页页面
+
+![](D:\Projects\EasyJob\easy-job-front-admin\font-admin-resourse\首页页面.png)
+
+#### 封装 Card 组件
+
+```
+<script setup lang="ts">
+type Props = {
+  title?: string,
+  borderBottom?: boolean
+}
+
+const { title, borderBottom } = withDefaults(defineProps<Props>(), {
+  title: '卡片标题',
+  borderBottom: true
+})
+</script>
+
+<template>
+  <div class="card">
+    <el-card style="max-width: 1450px;" class="card-body" shadow="hover">
+      <template #header>
+        <div class="card-header">
+          <span> {{ title }} </span>
+        </div>
+      </template>
+      <slot></slot>
+    </el-card>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.card {
+  :deep(.card-body) {
+    padding: 15px;
+    margin-bottom: 10px;
+
+    .el-card__header {
+      padding: 0;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      // 由 borderBottom 控制是否有下边框和下padding
+      border-bottom: v-bind('borderBottom ? "var(--el-border-width) var(--el-border-style) var(--el-border-color)" : "none"');
+      padding-bottom: v-bind('borderBottom ? "10px" : "0"');
+
+      .card-header>span {
+        font-size: 20px;
+        font-weight: bold;
+      }
+    }
+
+    .el-card__body {
+      padding: 0;
+    }
+  }
+}
+</style>
+```
+
+
+
+#### 使用 Card 组件
+
+```
+<Card title="数据统计" :borderBottom="false">
+  <div class="data-list">
+    <el-row :gutter="10">
+      <el-col
+        :span="4"
+        v-for="i in allDataList"
+        :key="i.statisticsName"
+      >
+        <div class="data-item">
+          <div class="title">
+            {{ i.statisticsName }}
+          </div>
+          <div class="data-panel">
+            <div class="data">
+              {{ i.count }}
+            </div>
+            <div class="pre">
+              昨日新增： 
+              <span>
+                {{ i.preCount }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </el-col>
+    </el-row>
+  </div>
+</Card>
+```
+
+
+
+#### echarts 的使用
+
+```
+npm install echarts --save
+
+import * as echarts from 'echarts'
+import type { ECharts, EChartsOption } from 'echarts'
+
+// 引入自定义主题
+import westeros from '@/lib/theme/westeros.json'
+echarts.registerTheme('westeros', westeros)
+
+// echarts 初始化
+const content = ref<HTMLDivElement>()
+let ContentChart: ECharts
+const initContentChart = () => {
+  ContentChart = echarts.init(content.value, westeros)
+  const initOption = {
+    title: {
+      text: '内容统计'
+    },
+    tooltip: {}
+  }
+  ContentChart.setOption(initOption)
+}
+
+// 获取数据
+const contentData = ref<any>()
+const getContentData = async() => {
+  const res = await getContentWeekData()
+  if (res) {
+  	contentData.value = res
+    updateContentData()
+  }
+}
+
+// 更新图表
+const updateContentData = () => {
+  // console.log(contentData.value)
+  const xData = contentData.value.dateList
+  const legendList: any = []
+  const seriesData: any = []
+  contentData.value.itemDataList.forEach((ele: any) => {
+    seriesData.push({
+      name: ele.statisticsName,
+      data: ele.listData,
+      type: 'bar'
+    })
+    legendList.push(ele.statisticsName)
+  })
+  const updateOption: EChartsOption = {
+    legend: {
+      data: legendList
+    },
+    xAxis: {
+      data: xData,
+      axisLabel: {
+        rotate: 45 
+      }
+    },
+    yAxis: {},
+    series: seriesData
+  }
+  ContentChart.setOption(updateOption)
+}
+
+const screenAdapter = () => {
+  DownlodaChart.resize()
+  ContentChart.resize()
+}
+
+onMounted(() => {
+  initContentChart()
+  getContentData()
+  window.addEventListener('resize', screenAdapter)
+})
+```
+
+
+
+## 菜单管理
+
+#### 
+
+
+
+
+
+
+
+
+
+
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Card from '@/components/Card.vue'
 import { getAllData, getAppWeekData, getContentWeekData } from '@/api/home'
 import { onMounted, reactive, ref } from 'vue'
 import * as echarts from 'echarts'
@@ -292,12 +293,7 @@ onMounted(() => {
 
 <template>
   <div class="part-panel">
-    <el-card style="max-width: 1450px;" class="cart-body">
-      <template #header>
-        <div class="card-header">
-          <span>数据概括</span>
-        </div>
-      </template>
+    <Card title="数据统计" :borderBottom="false">
       <div class="data-list">
         <el-row :gutter="10">
           <el-col
@@ -324,15 +320,10 @@ onMounted(() => {
           </el-col>
         </el-row>
       </div>
-    </el-card>
+    </Card>
   </div>
   <div class="part-panel">
-    <el-card style="max-width: 1450px;" class="cart-body">
-      <template #header>
-        <div class="card-header">
-          <span>近日数据</span>
-        </div>
-      </template>
+    <Card title="近日数据" :borderBottom="false">
       <div class="chart-panel">
         <el-row :gutter="10">
           <el-col :span="12">
@@ -343,76 +334,56 @@ onMounted(() => {
           </el-col>
         </el-row>
       </div>
-    </el-card>
+    </Card>
   </div>
 </template>
 
 <style scoped lang="scss">
 .part-panel {
-  :deep(.cart-body) {
-    padding: 15px;
-    margin-bottom: 10px;
+  .data-list {
+    .data-item {
+      background-color: var(--el-color-primary-light-9);
+      border-radius: 8px;
+      padding: 10px;
 
-    .el-card__header {
-      padding: 0;
-      margin-bottom: 10px;
-      border: none;
-
-      .card-header>span {
-        font-size: 20px;
-        font-weight: bold;
+      .title {
+        color: #606266;
+        font-style: italic;
+        margin-bottom: 8px;
       }
-    }
 
-    .el-card__body {
-      padding: 0;
-    }
+      .data-panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
 
-    .data-list {
-      .data-item {
-        background-color: var(--el-color-primary-light-9);
-        border-radius: 8px;
-        padding: 10px;
-
-        .title {
-          color: #606266;
-          font-style: italic;
-          margin-bottom: 8px;
+        .data {
+          font-size: 20px;
+          font-weight: bold;
         }
 
-        .data-panel {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-end;
+        .pre {
+          font-size: 14px;
+          margin-right: 5px;
 
-          .data {
-            font-size: 20px;
-            font-weight: bold;
-          }
-
-          .pre {
-            font-size: 14px;
-            margin-right: 5px;
-
-            span {
-              font-size: 18px;
-              color: #F56C6C;
-            }
+          span {
+            font-size: 18px;
+            color: #F56C6C;
           }
         }
       }
     }
+  }
 
-    .chart-panel {
-      .download {
-        width: 100%;
-        height: 400px;
-      }
-      
-      .content {
-        width: 100%;
-        height: 400px;
-      }
+  .chart-panel {
+    .download {
+      width: 100%;
+      height: 400px;
+    }
+    
+    .content {
+      width: 100%;
+      height: 400px;
     }
   }
 }
