@@ -118,7 +118,7 @@ const editTab = (subName: any, actions: any) => {
 
 // 退出
 const handleLogout = () => {
-  confirmBox(async () => {
+  confirmBox('退出', async () => {
     // const res = await logout()
     sessionStorage.removeItem('userInfo')
     router.push('/login')
@@ -300,9 +300,18 @@ const closeDialog = () => {
           background-color: rgb(245, 247, 251);
         }
 
+        .el-tabs__item {
+          color: #606266;
+        }
+
+        .el-tabs__item.is-active, .el-tabs__item:hover {
+          color: var(--el-color-primary);
+        }
+
         // 让所有没有 is-active 类名的 el-tabs__item 有下边框
         .el-tabs__item:not(.is-active) {
           border-bottom: 1px solid var(--el-border-color-light);
+          background-color: var(--color-background);
         }
       }
 

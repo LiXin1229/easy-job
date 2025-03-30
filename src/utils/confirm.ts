@@ -1,8 +1,8 @@
 import { ElMessage, ElMessageBox } from "element-plus"
 
-export const confirmBox = (okFun: Function) => {
+export const confirmBox = (text: string, okFun: Function) => {
   ElMessageBox.confirm(
-    '确定退出吗？',
+    `确定${text}吗？`,
     '提示',
     {
       confirmButtonText: '确定',
@@ -11,16 +11,12 @@ export const confirmBox = (okFun: Function) => {
     }
   )
   .then(() => {
-    ElMessage({
-      type: 'success',
-      message: '成功退出',
-    })
     okFun()
   })
   .catch(() => {
     ElMessage({
       type: 'info',
-      message: '取消退出',
+      message: `取消${text}`,
     })
   })
 }

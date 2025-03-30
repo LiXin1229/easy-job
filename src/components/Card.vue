@@ -9,13 +9,11 @@ type Props = {
   borderBottom?: boolean
 }
 
-const { title, borderBottom, titleStyle } = withDefaults(defineProps<Props>(), {
-  title: '卡片标题',
-  borderBottom: true,
-  titleStyle: () => ({
-    fontSize: '20px'
-  })
-})
+const { 
+  title = '卡片标题',
+  borderBottom = true,
+  titleStyle = { fontSize: '20px' } 
+} = defineProps<Props>()
 </script>
 
 <template>
