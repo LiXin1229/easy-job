@@ -542,11 +542,48 @@ onMounted(() => {
 
 ## 菜单管理
 
-#### 
+#### ![](D:\Projects\EasyJob\easy-job-front-admin\font-admin-resourse\菜单管理.png)
 
 
 
+#### 菜单 ElTree
 
+```
+<el-tree
+    ref="refTree"
+    style="max-width: 600px"
+    :highlight-current="true"
+    :expand-on-click-node="false"
+    default-expand-all
+    node-key="menuId" // 节点标识
+    :data="treeData" // ElTree 数据
+    :props="treeProps" // 节点配置项
+    @node-click="nodeClick" // 当节点被点击的时候触发
+    class="tree-panel"
+  >
+    <template #default="{ data }">
+      <div class="custom-node-style">
+        <span class="node-title">{{ data.menuName }}</span>
+        <div>
+          <el-dropdown trigger="click">
+            <span class="el-dropdown-link">
+              <el-icon class="el-icon-more">
+                <MoreFilled />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="editMenu('add', data)">添加子菜单</el-dropdown-item>
+                        <el-dropdown-item v-if="data.pId !== -1" @click="editMenu('edit', 							data)">修改</el-dropdown-item>
+                        <el-dropdown-item v-if="data.pId !== -1" @click="deleteMenu">删除</el-						dropdown-item>
+                      </el-dropdown-menu>
+                    </template>
+                  </el-dropdown>
+                </div>
+              </div>
+            </template>
+          </el-tree>
+```
 
 
 

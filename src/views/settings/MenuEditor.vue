@@ -16,7 +16,7 @@ const showDialog = (type: string, data: any) => {
     case 'add':
       dialogConfig.value.title = '新增菜单'
       ruleForm.value.pId = data.menuId
-      break;
+      break
     case 'edit':
       dialogConfig.value.title = '修改菜单'
       ruleForm.value.pId = data.menuId
@@ -24,7 +24,7 @@ const showDialog = (type: string, data: any) => {
       ruleForm.value.menuType = data.menuType
       ruleForm.value.menuUrl = data.menuUrl
       ruleForm.value.permissionCode = data.permissionCode
-      break;
+      break
   }
 }
 
