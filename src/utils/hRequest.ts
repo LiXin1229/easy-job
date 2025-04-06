@@ -16,13 +16,19 @@ export interface HRequestConfig<T = AxiosResponse> extends AxiosRequestConfig {
   showLoading?: boolean
 }
 
+// console.log(import.meta.env.MODE)
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 class HRequest {
-  instance: AxiosInstance = axios.create()
+  instance: AxiosInstance = axios.create({
+    baseURL: BASE_URL,
+    timeout: 5000
+  })
   interceptors?: HRequestInterceptors
   showLoading: boolean = false
   loading?: LoadingInstance
 
-  constructor(config: HRequestConfig) {
+  constructor() {
     this.RequestInterceptor()
     this.ResponseInterceptor()
   }
@@ -31,6 +37,7 @@ class HRequest {
   private RequestInterceptor() {
     this.instance.interceptors.request.use(
       (config) => {
+        // console.log('Request Config:', config); // 输出请求配置
         if (this.showLoading) {
           this.loading = ElLoading.service({
             lock: true,
@@ -130,9 +137,6 @@ class HRequest {
   }
 }
 
-const hRequest = new HRequest({
-  // baseURL: BASE_URL,
-  timeout: 5000
-})
+const hRequest = new HRequest()
 
 export default hRequest

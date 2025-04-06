@@ -3,14 +3,14 @@ import request, { type HRequestInterceptors } from '@/utils/hRequest'
 
 export const getCheckCodev2 = () => {
   return requestv2({
-    url: 'https://api.xygeng.cn/one',
+    url: '/checkCode',
     showLoading: true
   })
 }
 
 export const getCheckCode = () => {
   return request.post({
-    url: 'https://api.xygeng.cn/one',
+    url: '/checkCode',
     interceptors: myInterceptors
   })
 }
@@ -22,9 +22,10 @@ const myInterceptors: HRequestInterceptors = {
   }
 }
 
-export const toLogin = () => {
+export const toLogin = (params: any) => {
   return request.post({
-    url: 'https://api.xygeng.cn/one',
+    url: '/login',
+    params,
     showLoading: true
   })
 }

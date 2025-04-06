@@ -22,8 +22,11 @@ const customConfig: CustomConfigType = {
   loading: null
 }
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL
+
 // 创建axios实例
 const instance: any = axios.create({
+  baseURL: BASE_URL,
   timeout: 5000,
   headers: {
     'X-Requested-With': 'XMLHttpRequest'
@@ -33,7 +36,7 @@ const instance: any = axios.create({
 // 请求拦截器
 instance.interceptors.request.use(
   (config: AxiosRequestConfig) => {
-    console.log(customConfig.showLoading)
+    // console.log('Request Config:', config); // 输出请求配置
     if (customConfig.showLoading) { // 如果 showLoading 为 true 展示加载动画
       const loading = ElLoading.service({ // loading 动画
         lock: true,

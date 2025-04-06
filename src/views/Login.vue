@@ -11,11 +11,12 @@ const instance = getCurrentInstance() as ComponentInternalInstance
 
 // 验证码
 let checkCode = ref('')
+let checkCodeSrc = ref('')
 const setCheckCode = async() => {
   try {
     const res = await getCheckCode()
-    console.log(res.data.content)
-    checkCode.value = res.data.content
+    console.log(res.data)
+    checkCodeSrc.value = res.data.image
   } catch (error) {
     ElMessage({
       message: `验证码获取失败`,
@@ -66,7 +67,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
         passWord: md5(ruleForm.passWord), // 使用 md5 加工密码
         checkCode: ruleForm.checkCode
       }
-      const res = await toLogin()
+      const res: any = await toLogin(params)
       if (!res) {
         return
       }
@@ -81,26 +82,33 @@ const submitForm = (formEl: FormInstance | undefined) => {
       } else {
         instance.appContext.config.globalProperties.VueCookies.remove('loginInfo')
       }
-      const userInfo = {
-        userName: "李信",
-        menuList: [
-          { menuName: '首页', menuUrl: '/', icon: 'home', children: [
-            { menuName: '首页', menuUrl: '/home' }
-          ] },
-          { menuName: '内容管理', menuUrl: '/content', icon: 'content', children: [
-            { menuName: '分类管理', menuUrl: '/content/category' },
-            { menuName: '八股文管理', menuUrl: '/content/bagu' },
-            { menuName: '题库管理', menuUrl: '/content/tiku' },
-            { menuName: '经验分享', menuUrl: '/content/jinyan' }
-          ] },
-          { menuName: 'app', menuUrl: '/app', icon: 'app', children: [] },
-          { menuName: '设置', menuUrl: '/setting', icon: 'settings', children: [
-            { menuName: '菜单管理', menuUrl: '/settings/menu' },
-            { menuName: '角色管理', menuUrl: '/settings/juese' },
-            { menuName: '系统用户', menuUrl: '/settings/xitongyonghu' }
-          ] },
-        ]
-      }
+
+      console.log(res)
+      const userInfo = res.data
+      // const userInfo = {
+      //   userName: "李信",
+      //   menuList: [
+      //     {
+      //       "menuName": "首页", "menuUrl": "/", "icon": "home", "children": [
+      //         { "menuName": "首页", "menuUrl": "/home" }
+      //       ]
+      //     },
+      //     { "menuName": "内容管理", "menuUrl": "/content", "icon": "content", "children": [
+      //         { "menuName": "分类管理", "menuUrl": "/cntent/category" },
+      //         { "menuName": "八股文管理", "menuUrl": "/content/bagu" },
+      //         { "menuName": "题库管理", "menuUrl": "/content/tiku" },
+      //         { "menuName":"经验分享", "menuUrl": "/content/jinyan" }
+      //       ]
+      //     },
+      //     { "menuName": "app", "menuUrl": "/app", "icon": "app", "children": [] },
+      //     { "menuName": "设置", "menuUrl": "/setting", "icon": "settings", "children": [
+      //         { "menuName": "菜单管理", "menuUrl": "/settings/menu" },
+      //         { "menuName": "角色管理", "menuUrl": "/settings/juese" },
+      //         { "menuName": "系统用户", "menuUrl": "/settings/xitongyonghu" }
+      //       ]
+      //     }
+      //   ]
+      // }
       sessionStorage.setItem('userInfo', JSON.stringify(userInfo))
       ElMessage({
         message: `登录成功`,
@@ -162,7 +170,7 @@ const submitForm = (formEl: FormInstance | undefined) => {
             </template>
           </el-input>
           <div class="check-code" @click="setCheckCode">
-            {{ checkCode }}
+            <img :src="checkCodeSrc" alt="">
           </div>
         </el-form-item>
         <el-form-item>
@@ -214,18 +222,22 @@ const submitForm = (formEl: FormInstance | undefined) => {
   }
 
   .check-code-box {
-    display: flex;
-    justify-content: space-between;
+    position: relative;
 
     .check-code-input {
-      width: 45%;
+      width: 50%;
     }
 
     .check-code {
       width: 45%;
-      text-align: center;
-      white-space: nowrap; /* 防止文本换行 */
-      overflow: hidden; /* 隐藏溢出的内容 */
+      position: absolute;
+      top: 0;
+      left: 185px;
+
+      img {
+        width: 100%;
+        height: 40px;
+      }
     }
   }
 }
